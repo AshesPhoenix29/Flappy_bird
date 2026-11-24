@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   package:
@@ -19,6 +20,7 @@ jobs:
           - os: windows-latest
             package: Windows
             archive: FlappyBird-Windows.zip
+
           - os: macos-latest
             package: macOS
             archive: FlappyBird-macOS.zip
@@ -37,24 +39,51 @@ jobs:
         shell: bash
         run: |
           mkdir -p build/classes build/input dist
+
           javac --release 11 -d build/classes *.java
+
           cp angry-bird.png build/classes/
-          test -f build/classes/angry-bird.png
-          jar --create --file build/input/FlappyBird.jar --main-class Main -C build/classes .
-          
+
+          jar --create \
+            --file build/input/FlappyBird.jar \
+            --main-class Main \
+            -C build/classes .
+
       - name: Package Windows app
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          jpackage --type app-image --name FlappyBird --input build/input --main-jar FlappyBird.jar --main-class Main --dest dist
-          Compress-Archive -Path dist\FlappyBird -DestinationPath FlappyBird-Windows.zip
+          jpackage --type app-image `
+            --name FlappyBird `
+            --input build/input `
+            --main-jar FlappyBird.jar `
+            --main-class Main `
+            --dest dist
+
+          Compress-Archive `
+            -Path dist\FlappyBird `
+            -DestinationPath FlappyBird-Windows.zip
 
       - name: Package macOS app
         if: runner.os == 'macOS'
         shell: bash
         run: |
-          jpackage --type app-image --name FlappyBird --input build/input --main-jar FlappyBird.jar --main-class Main --dest dist
-          ditto -c -k --sequesterRsrc --keepParent dist/FlappyBird.app FlappyBird-macOS.zip
+          jpackage --type app-image \
+            --name FlappyBird \
+            --input build/input \
+            --main-jar FlappyBird.jar \
+            --main-class Main \
+            --dest dist
+
+          ditto -c -k --sequesterRsrc \
+            --keepParent dist/FlappyBird.app \
+            FlappyBird-macOS.zip
+
+      - name: Verify ZIP
+        shell: bash
+        run: |
+          ls -lh "${{ matrix.archive }}"
+          test -f "${{ matrix.archive }}"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -74,6 +103,15 @@ jobs:
           path: release-assets
           merge-multiple: true
 
-      - uses: softprops/action-gh-release@v2
+      - name: Check release files
+        run: |
+          ls -lh release-assets/
+          test -f release-assets/FlappyBird-Windows.zip
+          test -f release-assets/FlappyBird-macOS.zip
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          files: release-assets/*.zip
+          files: |
+            release-assets/FlappyBird-Windows.zip
+            release-assets/FlappyBird-macOS.zip
