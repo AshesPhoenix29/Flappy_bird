@@ -14,6 +14,8 @@
   const stage = document.querySelector(".game-shell");
   const status = document.getElementById("game-status");
   const storageNote = document.getElementById("storage-note");
+  const birdImage = new Image();
+  birdImage.src = "./assets/angry-bird.svg";
   const game = {
     state: "start",
     score: 0,
@@ -401,19 +403,44 @@
     }
   }
 
-  function drawBird() {
-    const bird = game.bird;
-    const angle = game.state === "playing" ? Math.max(-25, Math.min(70, bird.velocity / scaled(60) * 9)) : 0;
-    const yOffset = game.state === "start" ? Math.sin(game.frameCount * 0.08) * scaled(8) : 0;
-    context.save();
-    context.translate(bird.x + bird.width / 2, bird.y + yOffset + bird.height / 2);
-    context.rotate(angle * Math.PI / 180);
+ function drawBird() {
+  const bird = game.bird;
+
+  const angle = game.state === "playing"
+    ? Math.max(-25, Math.min(70, bird.velocity / scaled(60) * 9))
+    : 0;
+
+  const yOffset = game.state === "start"
+    ? Math.sin(game.frameCount * 0.08) * scaled(8)
+    : 0;
+
+  context.save();
+
+  context.translate(
+    bird.x + bird.width / 2,
+    bird.y + yOffset + bird.height / 2
+  );
+
+  context.rotate(angle * Math.PI / 180);
+
+  if (birdImage.complete && birdImage.naturalWidth > 0) {
+    context.drawImage(
+      birdImage,
+      -bird.width / 2,
+      -bird.height / 2,
+      bird.width,
+      bird.height
+    );
+  } else {
+    // Fallback if SVG has not loaded
     context.fillStyle = "#e5253a";
     context.beginPath();
-    context.ellipse(0, 0, bird.width / 2, bird.height / 2, 0, 0, Math.PI * 2);
+    context.arc(0, 0, bird.width / 2, 0, Math.PI * 2);
     context.fill();
-    context.restore();
   }
+
+  context.restore();
+}
 
   function drawCenteredText(text, x, y, font, color, strokeColor) {
     context.font = font;
