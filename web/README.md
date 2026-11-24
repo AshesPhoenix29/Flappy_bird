@@ -29,8 +29,8 @@ included because no licensed sound assets are present.
 
 The repository workflow at `.github/workflows/pages.yml` publishes this
 directory using GitHub Pages. It runs on pushes to `main` and can also be run
-from the Actions tab. In the repository settings, enable Pages with **GitHub
-Actions** as the build and deployment source if it is not already enabled.
+from the Actions tab. The repository's Pages source is configured as **GitHub
+Actions**.
 
 The web files use relative URLs, so the game works both locally and at
 <https://ashesphoenix29.github.io/Flappy_bird/> under the repository path.
