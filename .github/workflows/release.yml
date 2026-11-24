@@ -1,0 +1,79 @@
+
+name: Build Flappy Bird
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            package: Windows
+            archive: FlappyBird-Windows.zip
+          - os: macos-latest
+            package: macOS
+            archive: FlappyBird-macOS.zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Compile application
+        shell: bash
+        run: |
+          mkdir -p build/classes build/input dist
+          javac --release 11 -d build/classes *.java
+          cp angry-bird.png build/classes/
+          test -f build/classes/angry-bird.png
+          jar --create --file build/input/FlappyBird.jar --main-class Main -C build/classes .
+          
+      - name: Package Windows app
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          jpackage --type app-image --name FlappyBird --input build/input --main-jar FlappyBird.jar --main-class Main --dest dist
+          Compress-Archive -Path dist\FlappyBird -DestinationPath FlappyBird-Windows.zip
+
+      - name: Package macOS app
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          jpackage --type app-image --name FlappyBird --input build/input --main-jar FlappyBird.jar --main-class Main --dest dist
+          ditto -c -k --sequesterRsrc --keepParent dist/FlappyBird.app FlappyBird-macOS.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FlappyBird-${{ matrix.package }}
+          path: ${{ matrix.archive }}
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: FlappyBird-*
+          path: release-assets
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*.zip
