@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#4ec0ca">
+    <meta name="description" content="Play Flappy Bird in your browser.">
+    <title>Flappy Bird</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="page">
+      <section class="game-shell" aria-label="Flappy Bird game">
+        <canvas
+          id="game"
+          tabindex="0"
+          aria-label="Flappy Bird. Tap or click to flap. Press Space or the Up Arrow to flap, P to pause, and R to restart after game over."
+        ></canvas>
+      </section>
+      <p class="instructions">Tap or click to flap · Space or Up Arrow to flap · P to pause</p>
+      <p id="storage-note" class="storage-note" hidden>Best score cannot be saved in this browser.</p>
+      <p id="game-status" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
+    </main>
+    <script src="./game.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,105 @@
+:root {
+  color-scheme: light;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #183b4a;
+  color: #fff;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(42, 87, 100, 0.7), transparent 70%),
+    #183b4a;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.page {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(0px, env(safe-area-inset-top))
+    max(0px, env(safe-area-inset-right))
+    max(0px, env(safe-area-inset-bottom))
+    max(0px, env(safe-area-inset-left));
+}
+
+.game-shell {
+  width: min(100vw, 56.25dvh, 460px);
+  max-height: 100%;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  background: #4ec0ca;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.28);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#game {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  touch-action: none;
+}
+
+#game:focus-visible {
+  outline: 3px solid #ffc242;
+  outline-offset: -5px;
+}
+
+.instructions {
+  margin: 10px 12px 0;
+  color: #d7e8eb;
+  font-size: 13px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.storage-note {
+  position: fixed;
+  right: 12px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  left: 12px;
+  margin: 0;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-height: 420px) and (orientation: landscape) {
+  .instructions {
+    display: none;
+  }
+}
